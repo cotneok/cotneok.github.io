@@ -29,62 +29,63 @@ Binary is base-2. Each position is worth 2× the one to its right. To read a bin
 **Try it — click any bit to flip it:**
 
 <style>
-.widget{background:#141418;border:1px solid #2a2a35;border-radius:12px;padding:1.5rem;margin:1.5rem 0;font-family:'JetBrains Mono',monospace}
-.widget-title{font-size:11px;color:#8888a0;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+/* Responsive & Theme-Adaptive styles for Chirpy */
+.widget{background:var(--card-bg, rgba(128,128,128,0.05));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:12px;padding:1.5rem;margin:1.5rem 0;font-family:var(--font-family-monospace, monospace);color:var(--text-color, inherit);overflow-x:auto}
+.widget-title{font-size:11px;color:var(--text-muted-color, #888);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
 .bit-row{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:.8rem}
 .fbit{width:38px;height:44px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:600;cursor:pointer;transition:all .15s;border:2px solid transparent;user-select:none;gap:2px}
-.fbit-label{font-size:9px;color:#8888a0}
-.fbit.on{background:#6e7fff;color:#fff;border-color:#8fa0ff}
-.fbit.off{background:#1c1c22;color:#8888a0;border-color:#2a2a35}
+.fbit-label{font-size:9px;color:var(--text-muted-color, #888)}
+.fbit.on{background:rgba(110,127,255,0.8);color:#fff;border-color:#8fa0ff}
+.fbit.off{background:var(--body-bg, rgba(128,128,128,0.1));color:var(--text-muted-color, #888);border-color:var(--border-color, rgba(128,128,128,0.2))}
 .fbit:hover{transform:translateY(-2px);filter:brightness(1.2)}
 .bit-result{text-align:center;font-size:2rem;color:#6e7fff;font-weight:600;margin-top:.5rem}
-.bit-result span{color:#8888a0;font-size:1rem}
-.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
-.slider-row label{color:#8888a0;font-size:12px;min-width:50px}
-.slider-row input[type=range]{flex:1;accent-color:#6e7fff;cursor:pointer}
+.bit-result span{color:var(--text-muted-color, #888);font-size:1rem}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap}
+.slider-row label{color:var(--text-muted-color, #888);font-size:12px;min-width:50px}
+.slider-row input[type=range]{flex:1;min-width:150px;accent-color:#6e7fff;cursor:pointer}
 .slider-val{color:#6e7fff;font-size:1.2rem;font-weight:600;min-width:40px;text-align:right}
-.cidr-split-bar{height:36px;border-radius:8px;overflow:hidden;display:flex;border:1px solid #2a2a35;margin-bottom:1rem}
+.cidr-split-bar{height:36px;border-radius:8px;overflow:hidden;display:flex;border:1px solid var(--border-color, rgba(128,128,128,0.2));margin-bottom:1rem}
 .cidr-net{background:rgba(110,127,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:#6e7fff;border-right:2px solid #6e7fff;transition:width .4s ease;overflow:hidden;white-space:nowrap;padding:0 4px}
 .cidr-host{background:rgba(86,227,159,.15);display:flex;align-items:center;justify-content:center;font-size:11px;color:#56e39f;flex:1;overflow:hidden;white-space:nowrap;padding:0 4px}
-.cidr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat-card{background:#1c1c22;border:1px solid #2a2a35;border-radius:8px;padding:10px;text-align:center}
+.cidr-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px}
+.stat-card{background:var(--body-bg, rgba(128,128,128,0.1));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:8px;padding:10px;text-align:center}
 .stat-val{font-size:1rem;color:#6e7fff;font-weight:600;margin-bottom:3px;word-break:break-all}
-.stat-lbl{font-size:9px;color:#8888a0;text-transform:uppercase;letter-spacing:.08em}
-.and-rows{display:flex;flex-direction:column;gap:6px}
-.and-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.and-label{font-size:11px;color:#8888a0;min-width:70px;text-align:right;font-family:'JetBrains Mono',monospace}
-.and-bits{display:flex;gap:2px;flex-wrap:wrap}
-.abit{width:22px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.stat-lbl{font-size:9px;color:var(--text-muted-color, #888);text-transform:uppercase;letter-spacing:.08em}
+.and-rows{display:flex;flex-direction:column;gap:6px;overflow-x:auto;padding-bottom:8px}
+.and-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;width:max-content}
+.and-label{font-size:11px;color:var(--text-muted-color, #888);min-width:70px;text-align:right;font-family:var(--font-family-monospace, monospace)}
+.and-bits{display:flex;gap:2px;flex-wrap:nowrap}
+.abit{width:22px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;font-family:var(--font-family-monospace, monospace)}
 .abit-ip{background:rgba(110,127,255,.25);color:#6e7fff;border:1px solid rgba(110,127,255,.4)}
 .abit-mask{background:rgba(255,209,102,.2);color:#ffd166;border:1px solid rgba(255,209,102,.35)}
 .abit-r1{background:rgba(86,227,159,.25);color:#56e39f;border:1px solid rgba(86,227,159,.4)}
-.abit-r0{background:#1c1c22;color:#8888a0;border:1px solid #2a2a35}
-.and-divider{border-top:1px solid #2a2a35;margin:4px 0 4px 76px}
-.and-result-label{font-size:11px;color:#56e39f;min-width:70px;text-align:right;font-family:'JetBrains Mono',monospace}
-.and-legend{display:flex;gap:16px;margin-top:1rem;flex-wrap:wrap;font-size:11px;color:#8888a0}
+.abit-r0{background:var(--body-bg, rgba(128,128,128,0.1));color:var(--text-muted-color, #888);border:1px solid var(--border-color, rgba(128,128,128,0.2))}
+.and-divider{border-top:1px solid var(--border-color, rgba(128,128,128,0.2));margin:4px 0 4px 76px;width:100%}
+.and-result-label{font-size:11px;color:#56e39f;min-width:70px;text-align:right;font-family:var(--font-family-monospace, monospace)}
+.and-legend{display:flex;gap:16px;margin-top:1rem;flex-wrap:wrap;font-size:11px;color:var(--text-muted-color, #888)}
 .legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
 .calc-inputs{display:flex;gap:8px;margin-bottom:1rem;align-items:flex-end;flex-wrap:wrap}
 .calc-input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
-.calc-input-group label{font-size:11px;color:#8888a0;letter-spacing:.08em}
-.calc-input-group input,.calc-input-group select{background:#1c1c22;border:1px solid #2a2a35;border-radius:6px;color:#e8e8f0;font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 10px;outline:none;transition:border-color .2s;width:100%}
+.calc-input-group label{font-size:11px;color:var(--text-muted-color, #888);letter-spacing:.08em}
+.calc-input-group input,.calc-input-group select{background:var(--body-bg, rgba(128,128,128,0.1));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:6px;color:var(--text-color, inherit);font-family:var(--font-family-monospace, monospace);font-size:14px;padding:8px 10px;outline:none;transition:border-color .2s;width:100%}
 .calc-input-group input:focus,.calc-input-group select:focus{border-color:#6e7fff}
-.calc-btn{background:#6e7fff;color:#fff;border:none;border-radius:6px;padding:9px 18px;font-family:'JetBrains Mono',monospace;font-size:13px;cursor:pointer;transition:all .2s;align-self:flex-end;white-space:nowrap}
+.calc-btn{background:#6e7fff;color:#fff;border:none;border-radius:6px;padding:9px 18px;font-family:var(--font-family-monospace, monospace);font-size:13px;cursor:pointer;transition:all .2s;align-self:flex-end;white-space:nowrap}
 .calc-btn:hover{background:#8fa0ff;transform:translateY(-1px)}
 .calc-results{display:none}
-.calc-results.show{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
-.result-card{background:#1c1c22;border:1px solid #2a2a35;border-radius:8px;padding:12px 14px}
-.result-label{font-size:10px;color:#8888a0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
-.result-val{font-size:14px;color:#e8e8f0;font-weight:500;font-family:'JetBrains Mono',monospace}
+.calc-results.show{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.result-card{background:var(--body-bg, rgba(128,128,128,0.1));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:8px;padding:12px 14px}
+.result-label{font-size:10px;color:var(--text-muted-color, #888);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.result-val{font-size:14px;color:var(--text-color, inherit);font-weight:500;font-family:var(--font-family-monospace, monospace)}
 .result-val.accent{color:#6e7fff}
 .result-val.green{color:#56e39f}
 .result-val.orange{color:#ff7a5c}
 .result-val.amber{color:#ffd166}
-.calc-error{color:#ff7a5c;font-size:12px;margin-top:6px;display:none;font-family:'JetBrains Mono',monospace}
-.challenge-box{background:#141418;border:1px solid #2a2a35;border-left:3px solid #6e7fff;border-radius:0 10px 10px 0;padding:1.2rem 1.5rem;margin:1.5rem 0}
-.challenge-box h4{color:#6e7fff;font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:.8rem}
-.challenge-reveal{background:#1c1c22;border:1px solid #2a2a35;border-radius:6px;padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8888a0;cursor:pointer;margin-top:1rem;display:inline-block;transition:all .2s}
+.calc-error{color:#ff7a5c;font-size:12px;margin-top:6px;display:none;font-family:var(--font-family-monospace, monospace)}
+.challenge-box{background:var(--card-bg, rgba(128,128,128,0.05));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-left:3px solid #6e7fff;border-radius:0 10px 10px 0;padding:1.2rem 1.5rem;margin:1.5rem 0}
+.challenge-box h4{color:#6e7fff;font-family:var(--font-family-monospace, monospace);font-size:13px;margin-bottom:.8rem}
+.challenge-reveal{background:var(--body-bg, rgba(128,128,128,0.1));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:6px;padding:8px 14px;font-family:var(--font-family-monospace, monospace);font-size:12px;color:var(--text-muted-color, #888);cursor:pointer;margin-top:1rem;display:inline-block;transition:all .2s}
 .challenge-reveal:hover{border-color:#6e7fff;color:#6e7fff}
-.challenge-answer{display:none;margin-top:1rem;background:#1c1c22;border:1px solid #2a2a35;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:#e8e8f0}
+.challenge-answer{display:none;margin-top:1rem;background:var(--body-bg, rgba(128,128,128,0.1));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:8px;padding:1rem;font-family:var(--font-family-monospace, monospace);font-size:12px;line-height:2;color:var(--text-color, inherit)}
 .challenge-answer .hl{color:#56e39f}
 </style>
 
@@ -131,6 +132,7 @@ When IPv4 was first designed, addresses were divided into classes based on the f
 | D | 224–239 | Multicast only |
 | E | 240–255 | Experimental |
 
+> [!NOTE]
 > `127.x.x.x` is reserved for **loopback** — when a device talks to itself. Try `ping 127.0.0.1` — it always responds.
 
 ---
@@ -411,8 +413,8 @@ function calcSubnet(){
 
 <div class="challenge-box">
   <h4>// CHALLENGE — Can you subnet this?</h4>
-  <p style="color:#e8e8f0;font-family:'JetBrains Mono',monospace;font-size:13px">Given: <strong style="color:#6e7fff">172.16.5.0 /27</strong></p>
-  <ol style="color:#8888a0;font-size:13px;margin-top:.5rem;padding-left:1.2rem;line-height:2.2">
+  <p style="color:var(--text-color, inherit);font-family:var(--font-family-monospace, monospace);font-size:13px">Given: <strong style="color:#6e7fff">172.16.5.0 /27</strong></p>
+  <ol style="color:var(--text-muted-color, #888);font-size:13px;margin-top:.5rem;padding-left:1.2rem;line-height:2.2">
     <li>What is the subnet mask?</li>
     <li>What is the block size?</li>
     <li>What is the network address?</li>
