@@ -16,34 +16,106 @@ So this is the post I wished existed. No shortcuts, no memorisation tricks — j
 
 Think of the postal system. Every house has a unique address so the postal service knows exactly where to deliver a letter. A network works the same way — every device needs a unique address so data knows where to go. That address is its **IP address**.
 
-IPv4 addresses are **32 bits long**, written as four numbers separated by dots — called **octets** because each one is 8 bits. Each octet can be any value from 0 to 255.
-
-```
-192   .   168   .   1   .   100
-octet 1   octet 2  octet 3  octet 4
- 8 bits    8 bits   8 bits   8 bits  =  32 bits total
-```
-
-Four numbers, each 0–255, giving roughly **4.3 billion unique addresses**. That felt infinite in the 1980s. Today we've nearly exhausted them — which is why IPv6 exists, but that's a story for another post.
+IPv4 addresses are **32 bits long**, written as four numbers separated by dots — called **octets** because each one is 8 bits. Each octet can be any value from 0 to 255, giving roughly **4.3 billion unique addresses**.
 
 ---
 
 ## Binary — The Only Language Computers Speak
 
-Here's the thing nobody tells beginners early enough: **your router doesn't think in decimal**. It thinks in binary — 1s and 0s — because its circuits are either on or off. Every IP address, every routing decision, every subnet calculation happens in binary.
+Here's the thing nobody tells beginners early enough: **your router doesn't think in decimal**. It thinks in binary. Every IP address, every routing decision, every subnet calculation happens in binary.
 
-Binary is base-2. Each position is worth 2× the one to its right:
+Binary is base-2. Each position is worth 2× the one to its right. To read a binary number, add up the place values wherever there is a `1`.
 
-| Position | 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 |
-|----------|-----|----|----|----|----|---|---|---|
-| Binary   |  1  |  1 |  0 |  0 |  0 | 1 | 0 | 0 |
-| Value    | 128 | 64 |  – |  – |  – | 4 | – | – |
+**Try it — click any bit to flip it:**
 
-**128 + 64 + 4 = 196**
+<style>
+.widget{background:#141418;border:1px solid #2a2a35;border-radius:12px;padding:1.5rem;margin:1.5rem 0;font-family:'JetBrains Mono',monospace}
+.widget-title{font-size:11px;color:#8888a0;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.bit-row{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:.8rem}
+.fbit{width:38px;height:44px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:600;cursor:pointer;transition:all .15s;border:2px solid transparent;user-select:none;gap:2px}
+.fbit-label{font-size:9px;color:#8888a0}
+.fbit.on{background:#6e7fff;color:#fff;border-color:#8fa0ff}
+.fbit.off{background:#1c1c22;color:#8888a0;border-color:#2a2a35}
+.fbit:hover{transform:translateY(-2px);filter:brightness(1.2)}
+.bit-result{text-align:center;font-size:2rem;color:#6e7fff;font-weight:600;margin-top:.5rem}
+.bit-result span{color:#8888a0;font-size:1rem}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.slider-row label{color:#8888a0;font-size:12px;min-width:50px}
+.slider-row input[type=range]{flex:1;accent-color:#6e7fff;cursor:pointer}
+.slider-val{color:#6e7fff;font-size:1.2rem;font-weight:600;min-width:40px;text-align:right}
+.cidr-split-bar{height:36px;border-radius:8px;overflow:hidden;display:flex;border:1px solid #2a2a35;margin-bottom:1rem}
+.cidr-net{background:rgba(110,127,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:#6e7fff;border-right:2px solid #6e7fff;transition:width .4s ease;overflow:hidden;white-space:nowrap;padding:0 4px}
+.cidr-host{background:rgba(86,227,159,.15);display:flex;align-items:center;justify-content:center;font-size:11px;color:#56e39f;flex:1;overflow:hidden;white-space:nowrap;padding:0 4px}
+.cidr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat-card{background:#1c1c22;border:1px solid #2a2a35;border-radius:8px;padding:10px;text-align:center}
+.stat-val{font-size:1rem;color:#6e7fff;font-weight:600;margin-bottom:3px;word-break:break-all}
+.stat-lbl{font-size:9px;color:#8888a0;text-transform:uppercase;letter-spacing:.08em}
+.and-rows{display:flex;flex-direction:column;gap:6px}
+.and-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.and-label{font-size:11px;color:#8888a0;min-width:70px;text-align:right;font-family:'JetBrains Mono',monospace}
+.and-bits{display:flex;gap:2px;flex-wrap:wrap}
+.abit{width:22px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.abit-ip{background:rgba(110,127,255,.25);color:#6e7fff;border:1px solid rgba(110,127,255,.4)}
+.abit-mask{background:rgba(255,209,102,.2);color:#ffd166;border:1px solid rgba(255,209,102,.35)}
+.abit-r1{background:rgba(86,227,159,.25);color:#56e39f;border:1px solid rgba(86,227,159,.4)}
+.abit-r0{background:#1c1c22;color:#8888a0;border:1px solid #2a2a35}
+.and-divider{border-top:1px solid #2a2a35;margin:4px 0 4px 76px}
+.and-result-label{font-size:11px;color:#56e39f;min-width:70px;text-align:right;font-family:'JetBrains Mono',monospace}
+.and-legend{display:flex;gap:16px;margin-top:1rem;flex-wrap:wrap;font-size:11px;color:#8888a0}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.calc-inputs{display:flex;gap:8px;margin-bottom:1rem;align-items:flex-end;flex-wrap:wrap}
+.calc-input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.calc-input-group label{font-size:11px;color:#8888a0;letter-spacing:.08em}
+.calc-input-group input,.calc-input-group select{background:#1c1c22;border:1px solid #2a2a35;border-radius:6px;color:#e8e8f0;font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 10px;outline:none;transition:border-color .2s;width:100%}
+.calc-input-group input:focus,.calc-input-group select:focus{border-color:#6e7fff}
+.calc-btn{background:#6e7fff;color:#fff;border:none;border-radius:6px;padding:9px 18px;font-family:'JetBrains Mono',monospace;font-size:13px;cursor:pointer;transition:all .2s;align-self:flex-end;white-space:nowrap}
+.calc-btn:hover{background:#8fa0ff;transform:translateY(-1px)}
+.calc-results{display:none}
+.calc-results.show{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.result-card{background:#1c1c22;border:1px solid #2a2a35;border-radius:8px;padding:12px 14px}
+.result-label{font-size:10px;color:#8888a0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.result-val{font-size:14px;color:#e8e8f0;font-weight:500;font-family:'JetBrains Mono',monospace}
+.result-val.accent{color:#6e7fff}
+.result-val.green{color:#56e39f}
+.result-val.orange{color:#ff7a5c}
+.result-val.amber{color:#ffd166}
+.calc-error{color:#ff7a5c;font-size:12px;margin-top:6px;display:none;font-family:'JetBrains Mono',monospace}
+.challenge-box{background:#141418;border:1px solid #2a2a35;border-left:3px solid #6e7fff;border-radius:0 10px 10px 0;padding:1.2rem 1.5rem;margin:1.5rem 0}
+.challenge-box h4{color:#6e7fff;font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:.8rem}
+.challenge-reveal{background:#1c1c22;border:1px solid #2a2a35;border-radius:6px;padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8888a0;cursor:pointer;margin-top:1rem;display:inline-block;transition:all .2s}
+.challenge-reveal:hover{border-color:#6e7fff;color:#6e7fff}
+.challenge-answer{display:none;margin-top:1rem;background:#1c1c22;border:1px solid #2a2a35;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:#e8e8f0}
+.challenge-answer .hl{color:#56e39f}
+</style>
 
-To convert any decimal to binary: divide by 2 repeatedly, read remainders bottom to top. To go binary → decimal: add up the place values wherever there's a `1`.
+<div class="widget">
+  <div class="widget-title">Binary Bit Flipper — click any bit to flip it</div>
+  <div class="bit-row" id="flipper-bits"></div>
+  <div class="bit-result" id="flipper-result">0 <span>decimal</span></div>
+</div>
 
-Each octet in an IP address is just a decimal number stored as 8 bits. When your router looks at `192.168.1.100`, it sees four groups of 8 bits — and all its decisions happen on those bits directly.
+<script>
+(function(){
+  var bits=[0,0,0,0,0,0,0,0];
+  var places=[128,64,32,16,8,4,2,1];
+  var container=document.getElementById('flipper-bits');
+  var result=document.getElementById('flipper-result');
+  function render(){
+    container.innerHTML='';
+    var val=0;
+    bits.forEach(function(b,i){
+      if(b) val+=places[i];
+      var el=document.createElement('div');
+      el.className='fbit '+(b?'on':'off');
+      el.innerHTML=b+'<span class="fbit-label">'+places[i]+'</span>';
+      (function(idx){ el.onclick=function(){ bits[idx]=bits[idx]?0:1; render(); }; })(i);
+      container.appendChild(el);
+    });
+    result.innerHTML=val+' <span>decimal</span>';
+  }
+  render();
+})();
+</script>
 
 ---
 
@@ -59,31 +131,27 @@ When IPv4 was first designed, addresses were divided into classes based on the f
 | D | 224–239 | Multicast only |
 | E | 240–255 | Experimental |
 
-> **Note:** `127.x.x.x` is reserved for **loopback** — when a device communicates with itself. Try pinging `127.0.0.1` — it'll always respond, because you're literally talking to your own network stack.
-
-Classes are mostly historical now. Modern networks use CIDR (covered below), which is far more flexible. But you'll still see class-based language in documentation and CCNA material — so it's worth knowing.
+> `127.x.x.x` is reserved for **loopback** — when a device talks to itself. Try `ping 127.0.0.1` — it always responds.
 
 ---
 
 ## Private vs. Public Addresses
 
-Your device's IP right now is almost certainly *not* visible on the internet. Three ranges are permanently reserved for private networks:
+Three ranges are permanently reserved for private networks — they're never routed on the public internet:
 
 | Range | Addresses | Common Use |
 |-------|-----------|------------|
-| `10.0.0.0/8` | ~16.7 million | Large enterprises, data centres |
+| `10.0.0.0/8` | ~16.7 million | Large enterprises |
 | `172.16.0.0/12` | ~1 million | Medium organisations |
 | `192.168.0.0/16` | ~65K | Your home Wi-Fi — right now |
 
-Your home router gives local devices addresses in the `192.168.x.x` range, then uses **NAT** (Network Address Translation) to represent all of them behind a single public IP. Think of it like an apartment building — hundreds of flats, one street address.
+Your home router uses **NAT** to represent all your private devices behind a single public IP. Like an apartment building — hundreds of flats, one street address.
 
 ---
 
 ## Subnet Masks — Drawing the Boundary
 
-Every IP address has two parts: the **network** portion (which network?) and the **host** portion (which device on that network?). A subnet mask is what tells you where that boundary falls.
-
-A subnet mask is always a solid block of 1s followed by a solid block of 0s. The 1s cover the network bits; the 0s expose the host bits:
+A subnet mask tells you where the **network** bits end and the **host** bits begin. It's always a solid block of 1s followed by 0s:
 
 ```
 255.255.255.0  =  11111111.11111111.11111111.00000000  (/24)
@@ -91,46 +159,153 @@ A subnet mask is always a solid block of 1s followed by a solid block of 0s. The
 255.0.0.0      =  11111111.00000000.00000000.00000000  (/8)
 ```
 
-More 1s in the mask = smaller network, fewer hosts. Fewer 1s = larger network, more hosts. This trade-off is the entire point of subnetting.
+More 1s = smaller network, fewer hosts. Fewer 1s = larger network, more hosts.
 
 ---
 
 ## The AND Operation — How Routers Actually Think
 
-When your computer sends a packet, it first asks: *is this destination on my network, or do I send it to the router?* To answer, it does one operation: **bitwise AND** between the destination IP and the subnet mask.
+When your computer sends a packet, it ANDs the destination IP with the subnet mask to find the network address. **This is the core of all routing.**
 
-AND is simple — it only outputs `1` if *both* inputs are `1`:
+**Full example — 192.168.1.100 AND 255.255.255.0:**
 
-```
-1 AND 1 = 1
-1 AND 0 = 0
-0 AND 0 = 0
-```
+<div class="widget">
+  <div class="widget-title">AND Operation Visualizer</div>
+  <div class="and-rows" id="and-vis"></div>
+  <div class="and-legend">
+    <span><span class="legend-dot" style="background:#6e7fff"></span>IP bits</span>
+    <span><span class="legend-dot" style="background:#ffd166"></span>Mask bits</span>
+    <span><span class="legend-dot" style="background:#56e39f"></span>Result = 1</span>
+    <span><span class="legend-dot" style="background:#1c1c22;border:1px solid #2a2a35"></span>Result = 0</span>
+  </div>
+</div>
 
-Full example with `192.168.1.100` and mask `255.255.255.0`:
+<script>
+(function(){
+  var ip=[192,168,1,100];
+  var mask=[255,255,255,0];
+  var res=ip.map(function(o,i){ return o&mask[i]; });
+  function toBits(n){ return n.toString(2).padStart(8,'0').split('').map(Number); }
+  var ipBits=ip.reduce(function(a,o){ return a.concat(toBits(o)); },[]);
+  var maskBits=mask.reduce(function(a,o){ return a.concat(toBits(o)); },[]);
+  var resBits=res.reduce(function(a,o){ return a.concat(toBits(o)); },[]);
+  function makeRow(bits, cls, label, labelClass){
+    var row=document.createElement('div');
+    row.className='and-row';
+    var lbl=document.createElement('div');
+    lbl.className=labelClass||'and-label';
+    lbl.textContent=label;
+    row.appendChild(lbl);
+    var bd=document.createElement('div');
+    bd.className='and-bits';
+    bits.forEach(function(b,i){
+      var el=document.createElement('div');
+      el.className='abit '+cls;
+      el.textContent=b;
+      bd.appendChild(el);
+      if(i===7||i===15||i===23){
+        var dot=document.createElement('span');
+        dot.style.cssText='color:#2a2a35;margin:0 2px;font-family:monospace';
+        dot.textContent='.';
+        bd.appendChild(dot);
+      }
+    });
+    row.appendChild(bd);
+    return row;
+  }
+  var container=document.getElementById('and-vis');
+  container.appendChild(makeRow(ipBits,'abit-ip',ip.join('.')));
+  container.appendChild(makeRow(maskBits,'abit-mask',mask.join('.')));
+  var div=document.createElement('div');
+  div.className='and-divider';
+  container.appendChild(div);
+  container.appendChild(makeRow(resBits.map(function(b){ return b; }),'',res.join('.'),'and-result-label'));
+  var lastRow=container.lastChild;
+  var lastBits=lastRow.querySelector('.and-bits');
+  lastBits.innerHTML='';
+  resBits.forEach(function(b,i){
+    var el=document.createElement('div');
+    el.className='abit '+(b?'abit-r1':'abit-r0');
+    el.textContent=b;
+    lastBits.appendChild(el);
+    if(i===7||i===15||i===23){
+      var dot=document.createElement('span');
+      dot.style.cssText='color:#2a2a35;margin:0 2px;font-family:monospace';
+      dot.textContent='.';
+      lastBits.appendChild(dot);
+    }
+  });
+})();
+</script>
 
-```
-IP:     11000000.10101000.00000001.01100100
-Mask:   11111111.11111111.11111111.00000000
-        ────────────────────────────────────
-Result: 11000000.10101000.00000001.00000000  =  192.168.1.0
-```
-
-**This is the one thing to remember from this entire post.** Every routing decision — in your home router, a Cisco switch, or an internet backbone — is this exact AND operation. The result is the **network address**. Master this and you have the key to all of networking.
+The result — **192.168.1.0** — is the network address. Any device whose IP ANDs to the same result is on the same network.
 
 ---
 
 ## CIDR Notation — The Shorthand
 
-Writing `255.255.255.0` every time is tedious. CIDR notation uses a slash followed by the number of 1-bits in the mask:
+Writing `255.255.255.0` every time is tedious. CIDR uses a slash + the count of 1-bits:
 
 ```
-192.168.1.0/24   →   255.255.255.0    (24 ones, 8 zeros)
-10.0.0.0/8       →   255.0.0.0        (8 ones, 24 zeros)
-172.16.0.0/16    →   255.255.0.0      (16 ones, 16 zeros)
+192.168.1.0/24  →  255.255.255.0   (24 ones)
+10.0.0.0/8      →  255.0.0.0       (8 ones)
 ```
 
-Quick reference for the most common prefix lengths:
+**Drag the slider to explore prefix lengths:**
+
+<div class="widget">
+  <div class="widget-title">CIDR Prefix Explorer</div>
+  <div class="slider-row">
+    <label>Prefix</label>
+    <input type="range" id="cidr-slider" min="1" max="30" value="24">
+    <div class="slider-val" id="cidr-val">/24</div>
+  </div>
+  <div class="cidr-split-bar">
+    <div class="cidr-net" id="cidr-net-bar" style="width:75%">NETWORK (24)</div>
+    <div class="cidr-host" id="cidr-host-bar">HOST (8)</div>
+  </div>
+  <div class="cidr-stats">
+    <div class="stat-card"><div class="stat-val" id="s-mask">255.255.255.0</div><div class="stat-lbl">Subnet Mask</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-hosts">254</div><div class="stat-lbl">Usable Hosts</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-block">256</div><div class="stat-lbl">Block Size</div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function cidrToMask(p){
+    return [0,1,2,3].map(function(i){
+      var b=Math.min(8,Math.max(0,p-i*8));
+      return 256-Math.pow(2,8-b);
+    });
+  }
+  function fmt(n){
+    if(n>=1000000) return (n/1000000).toFixed(1)+'M';
+    if(n>=1000) return (n/1000).toFixed(0)+'K';
+    return n.toString();
+  }
+  function update(p){
+    document.getElementById('cidr-val').textContent='/'+p;
+    var mask=cidrToMask(p);
+    var hosts=Math.max(0,Math.pow(2,32-p)-2);
+    var block=Math.pow(2,32-p);
+    document.getElementById('s-mask').textContent=mask.join('.');
+    document.getElementById('s-hosts').textContent=fmt(hosts);
+    document.getElementById('s-block').textContent=fmt(block);
+    var netPct=(p/32*100).toFixed(1);
+    var netBar=document.getElementById('cidr-net-bar');
+    var hostBar=document.getElementById('cidr-host-bar');
+    netBar.style.width=netPct+'%';
+    netBar.textContent=p>5?'NETWORK ('+p+')':'';
+    hostBar.textContent=(32-p)>2?'HOST ('+(32-p)+')':'';
+  }
+  var slider=document.getElementById('cidr-slider');
+  slider.addEventListener('input',function(){ update(parseInt(slider.value)); });
+  update(24);
+})();
+</script>
+
+Quick reference:
 
 | CIDR | Subnet Mask | Usable Hosts | Use Case |
 |------|-------------|--------------|----------|
@@ -139,120 +314,136 @@ Quick reference for the most common prefix lengths:
 | `/24` | 255.255.255.0 | 254 | Office LAN (most common) |
 | `/25` | 255.255.255.128 | 126 | Half of a /24 |
 | `/30` | 255.255.255.252 | 2 | Point-to-point links |
-| `/32` | 255.255.255.255 | 1 (host route) | Loopback / static host |
-
-The number after the slash tells you everything. More bits = smaller network, fewer hosts. Fewer bits = larger network, more hosts.
-
----
-
-## Worked Examples
-
-Theory is fine. But subnetting only clicks when you work through real problems.
-
-### Example 1 — `192.168.1.0/26`
-
-**Step 1:** `/26` means 26 network bits, 6 host bits. The last octet splits at bit 6: `11000000` = 192. Subnet mask = `255.255.255.192`.
-
-**Step 2:** Block size = 2⁶ = **64**. Networks increment by 64 in the last octet: .0, .64, .128, .192.
-
-**Step 3:** Calculate the four key values:
-
-```
-Network address:    192.168.1.0
-Broadcast address:  192.168.1.63
-Usable host range:  192.168.1.1 – 192.168.1.62
-Usable hosts:       62  (2⁶ − 2)
-```
-
----
-
-### Example 2 — `10.0.0.0/22`
-
-**Step 1:** `/22` means 22 network bits, 10 host bits. The boundary falls in the *third* octet. Mask third octet: `11111100` = 252. Full mask = `255.255.252.0`.
-
-**Step 2:** Block size = 2¹⁰ = **1024** addresses. Networks increment by 4 in the *third* octet: `10.0.0.0`, `10.0.4.0`, `10.0.8.0`...
-
-**Step 3:**
-
-```
-Network address:    10.0.0.0
-Broadcast address:  10.0.3.255
-Usable host range:  10.0.0.1 – 10.0.3.254
-Usable hosts:       1,022  (2¹⁰ − 2)
-```
+| `/32` | 255.255.255.255 | 1 | Loopback / host route |
 
 ---
 
 ## Wildcard Masks — The Inverse
 
-Cisco ACLs and OSPF use **wildcard masks** — the bitwise inverse of a subnet mask. The rule is simple: `0` = "this bit must match exactly", `1` = "any value is fine."
-
-To get a wildcard mask: subtract the subnet mask from `255.255.255.255`.
+Cisco ACLs and OSPF use **wildcard masks** — the bitwise inverse of a subnet mask. `0` = "must match", `1` = "don't care." To get one: subtract the subnet mask from `255.255.255.255`.
 
 ```
-Subnet mask:   255.255.255.0    (/24)
-Wildcard mask:   0.0.0.255      (NOT of the subnet mask)
-Meaning:       Match 192.168.1.0 → 192.168.1.255  (entire /24 range)
+Subnet mask:   255.255.255.0   (/24)
+Wildcard mask:   0.0.0.255
+Meaning:       Match 192.168.1.0 → .255 (entire /24)
 ```
 
-In a Cisco ACL it looks like this:
-
-```cisco
+```
 ! Permit all traffic from 192.168.1.x
 access-list 10 permit 192.168.1.0 0.0.0.255
 
-! Permit only the host 10.10.10.5
+! Permit only host 10.10.10.5
 access-list 10 permit 10.10.10.5 0.0.0.0
 ```
 
 ---
 
-## Putting It All Together
+## Subnet Calculator
 
-When your computer sends a packet to `192.168.1.55`, here is the exact decision chain — every time, at wire speed:
+Enter any IP and prefix length to get all four key values instantly:
 
-```
-Step 1 — AND destination with my subnet mask:
-  192.168.1.55 AND 255.255.255.0 = 192.168.1.0
+<div class="widget">
+  <div class="widget-title">Subnet Calculator</div>
+  <div class="calc-inputs">
+    <div class="calc-input-group">
+      <label>IP ADDRESS</label>
+      <input type="text" id="calc-ip" placeholder="192.168.1.0" value="192.168.1.0">
+    </div>
+    <div class="calc-input-group" style="max-width:100px">
+      <label>PREFIX</label>
+      <select id="calc-prefix">
+        <option>/8</option><option>/9</option><option>/10</option><option>/11</option>
+        <option>/12</option><option>/13</option><option>/14</option><option>/15</option>
+        <option>/16</option><option>/17</option><option>/18</option><option>/19</option>
+        <option>/20</option><option>/21</option><option>/22</option><option>/23</option>
+        <option selected>/24</option><option>/25</option><option>/26</option><option>/27</option>
+        <option>/28</option><option>/29</option><option>/30</option><option>/32</option>
+      </select>
+    </div>
+    <button class="calc-btn" onclick="calcSubnet()">Calculate</button>
+  </div>
+  <div class="calc-error" id="calc-error">Invalid IP address</div>
+  <div class="calc-results" id="calc-results">
+    <div class="result-card"><div class="result-label">Network Address</div><div class="result-val accent" id="r-network">—</div></div>
+    <div class="result-card"><div class="result-label">Broadcast Address</div><div class="result-val orange" id="r-broadcast">—</div></div>
+    <div class="result-card"><div class="result-label">First Usable Host</div><div class="result-val green" id="r-first">—</div></div>
+    <div class="result-card"><div class="result-label">Last Usable Host</div><div class="result-val green" id="r-last">—</div></div>
+    <div class="result-card"><div class="result-label">Subnet Mask</div><div class="result-val" id="r-mask">—</div></div>
+    <div class="result-card"><div class="result-label">Usable Hosts</div><div class="result-val amber" id="r-hosts">—</div></div>
+  </div>
+</div>
 
-Step 2 — Does result match my network address?
-  My network: 192.168.1.0  ✓ Match → send directly
-
-Step 3 — No match? Send to default gateway (router)
-  Router repeats this vs. its routing table — longest prefix wins
-```
-
-> **The whole point of subnetting** is to break a large address space into smaller, manageable segments — reducing broadcast traffic, improving security, and making networks easier to manage. Every subnet has one network address (first), one broadcast address (last), and everything in between is usable by hosts.
-
-That's the foundation. Master these concepts and you'll be able to read any network diagram, understand any routing table, and write Cisco ACLs with confidence. Everything else — VLSM, OSPF, BGP — builds on exactly this.
+<script>
+function calcSubnet(){
+  var ipStr=document.getElementById('calc-ip').value.trim();
+  var prefix=parseInt(document.getElementById('calc-prefix').value.replace('/',''));
+  var err=document.getElementById('calc-error');
+  var results=document.getElementById('calc-results');
+  var parts=ipStr.split('.').map(Number);
+  if(parts.length!==4||parts.some(function(p){ return isNaN(p)||p<0||p>255; })){
+    err.style.display='block'; results.classList.remove('show'); return;
+  }
+  err.style.display='none';
+  function cidrToMask(p){
+    return [0,1,2,3].map(function(i){ var b=Math.min(8,Math.max(0,p-i*8)); return 256-Math.pow(2,8-b); });
+  }
+  var mask=cidrToMask(prefix);
+  var network=parts.map(function(o,i){ return o&mask[i]; });
+  var wildcard=mask.map(function(m){ return 255-m; });
+  var broadcast=network.map(function(o,i){ return o|wildcard[i]; });
+  var first=network.slice(); first[3]+=1;
+  var last=broadcast.slice(); last[3]-=1;
+  var hosts=Math.max(0,Math.pow(2,32-prefix)-2);
+  function fmt(n){ if(n>=1000000) return (n/1000000).toFixed(2)+'M'; if(n>=1000) return (n/1000).toFixed(0)+'K'; return n.toString(); }
+  document.getElementById('r-network').textContent=network.join('.');
+  document.getElementById('r-broadcast').textContent=broadcast.join('.');
+  document.getElementById('r-first').textContent=prefix<=30?first.join('.'):'N/A';
+  document.getElementById('r-last').textContent=prefix<=30?last.join('.'):'N/A';
+  document.getElementById('r-mask').textContent=mask.join('.');
+  document.getElementById('r-hosts').textContent=fmt(hosts)+' hosts';
+  results.classList.add('show');
+}
+</script>
 
 ---
 
 ## Practice Challenge
 
-Given: **172.16.5.0/27**
+<div class="challenge-box">
+  <h4>// CHALLENGE — Can you subnet this?</h4>
+  <p style="color:#e8e8f0;font-family:'JetBrains Mono',monospace;font-size:13px">Given: <strong style="color:#6e7fff">172.16.5.0 /27</strong></p>
+  <ol style="color:#8888a0;font-size:13px;margin-top:.5rem;padding-left:1.2rem;line-height:2.2">
+    <li>What is the subnet mask?</li>
+    <li>What is the block size?</li>
+    <li>What is the network address?</li>
+    <li>What is the broadcast address?</li>
+    <li>What is the usable host range?</li>
+  </ol>
+  <div class="challenge-reveal" onclick="document.getElementById('ch-answer').style.display='block';this.style.display='none'">Reveal answer ↓</div>
+  <div class="challenge-answer" id="ch-answer">
+    Subnet mask:&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">255.255.255.224</span><br>
+    Block size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">32 addresses (2⁵)</span><br>
+    Network address: <span class="hl">172.16.5.0</span><br>
+    Broadcast:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">172.16.5.31</span><br>
+    Host range:&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">172.16.5.1 – 172.16.5.30</span><br>
+    Usable hosts:&nbsp;&nbsp; <span class="hl">30 hosts (2⁵ − 2)</span>
+  </div>
+</div>
 
-1. What is the subnet mask?
-2. What is the block size?
-3. What is the network address?
-4. What is the broadcast address?
-5. What is the usable host range?
+---
 
-<details>
-<summary>Reveal answer</summary>
+## What You Now Know
 
-```
-Subnet mask:       255.255.255.224
-Block size:        32 addresses (2⁵)
-Network address:   172.16.5.0
-Broadcast address: 172.16.5.31
-Usable host range: 172.16.5.1 – 172.16.5.30
-Usable hosts:      30  (2⁵ − 2)
-```
+- **IPv4 addresses** are 32 bits, four decimal octets (0–255 each)
+- **Binary** is how computers actually process every address — 8 bits per octet
+- **IP classes** (A/B/C) defined the original split — mostly replaced by CIDR
+- **Private ranges** (10.x, 172.16.x, 192.168.x) never appear on the public internet
+- **Subnet masks** draw the boundary between network and host bits
+- **AND operation** — the fundamental routing decision: IP AND mask = network address
+- **CIDR /notation** counts the 1-bits. More bits = smaller network
+- **Wildcard masks** are the inverse — used in Cisco ACLs and OSPF
 
-Key steps: `/27` = 5 host bits → mask last octet is `11100000` = 224. Block size = 2⁵ = 32. Network .0, broadcast .31, hosts .1–.30.
-
-</details>
+The fastest way to get good at this: practice on paper. Pick a random IP and prefix, work out the four values by hand. After 20 problems it becomes second nature.
 
 ---
 
