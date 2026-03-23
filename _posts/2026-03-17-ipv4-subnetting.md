@@ -12,21 +12,47 @@ So this is the post I wished existed. No shortcuts, no memorisation tricks — j
 
 ---
 
-## What Even is an IP Address?
+## Why Does Subnetting Exist?
 
-Think of the postal system. Every house has a unique address so the postal service knows exactly where to deliver a letter. A network works the same way — every device needs a unique address so data knows where to go. That address is its **IP address**.
+Imagine a company with 1,000 devices — servers, laptops, printers, phones — all on one flat network. Every time any device sends a broadcast, every other device has to process it. Traffic is noisy, troubleshooting is a nightmare, and a single compromised device can talk directly to anything else.
 
-IPv4 addresses are **32 bits long**, written as four numbers separated by dots — called **octets** because each one is 8 bits. Each octet can be any value from 0 to 255, giving roughly **4.3 billion unique addresses**.
+**Subnetting** is the solution. You take a large block of addresses and divide it into smaller, isolated networks. Each subnet is its own contained space. Traffic stays local unless it needs to cross a router. Security boundaries become real. It's the difference between one big open office floor and a building with proper rooms and locked doors.
+
+That's the *why*. Now let's build the *how* from scratch.
 
 ---
 
-## Binary — The Only Language Computers Speak
+## What Even is an IP Address?
 
-Here's the thing nobody tells beginners early enough: **your router doesn't think in decimal**. It thinks in binary. Every IP address, every routing decision, every subnet calculation happens in binary.
+Think of the postal system. Every house has a unique address so letters are delivered to exactly the right place. Networks work the same way — every device needs a unique address so data knows where to go. That address is its **IP address**.
 
-Binary is base-2. Each position is worth 2× the one to its right. To read a binary number, add up the place values wherever there is a `1`.
+One quick distinction worth knowing: there are actually *two* kinds of addresses at play when data moves across a network.
 
-**Try it — click any bit to flip it:**
+- **IP address** — a *logical* address assigned by software. It can change. It identifies where a device sits in the network topology. This operates at **Layer 3** of the network model.
+- **MAC address** — a *physical* address burned into the hardware of your network card. It identifies the device itself, not its location. This operates at **Layer 2**.
+
+The postal analogy maps cleanly: your **IP address** is like your home address (which changes when you move), and your **MAC address** is like your passport number (permanently tied to you, the person). IP gets the data to the right neighbourhood; MAC gets it to the exact door. We could go much deeper on this — and we will in a future post — but for now, IP = logical = Layer 3 is all you need.
+
+IPv4 addresses are **32 bits long**, written as four numbers separated by dots — called **octets** because each one is 8 bits. Each octet ranges from 0 to 255, giving roughly **4.3 billion unique addresses**.
+
+---
+
+## Binary — The Only Language That Matters
+
+Here's what nobody tells beginners soon enough: **your router doesn't think in decimal**. It thinks in binary. Every IP address, every routing decision, every subnet calculation happens in binary. If you skip this section, nothing later will make real sense.
+
+Binary is **base-2**. Normal decimal is base-10 — each position is worth 10× the one to its right (ones, tens, hundreds…). Binary works the same way, but with 2× instead of 10×.
+
+In an 8-bit octet, the positions are worth:
+
+```
+Position:   8    7    6    5    4    3    2    1
+Value:     128   64   32   16    8    4    2    1
+```
+
+Each value is exactly **double** the one to its right. That's it — that's the whole system. To read a binary number, add up the position values wherever there's a `1`.
+
+So `10110000` means: 128 + 32 + 16 = **176**. Try it below — click any bit to flip it and watch the decimal update live:
 
 <style>
 /* Responsive & Theme-Adaptive styles for Chirpy */
@@ -87,6 +113,10 @@ Binary is base-2. Each position is worth 2× the one to its right. To read a bin
 .challenge-reveal:hover{border-color:#6e7fff;color:#6e7fff}
 .challenge-answer{display:none;margin-top:1rem;background:var(--body-bg, rgba(128,128,128,0.1));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:8px;padding:1rem;font-family:var(--font-family-monospace, monospace);font-size:12px;line-height:2;color:var(--text-color, inherit)}
 .challenge-answer .hl{color:#56e39f}
+.info-box{background:var(--card-bg, rgba(128,128,128,0.05));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-left:3px solid #ffd166;border-radius:0 10px 10px 0;padding:1rem 1.5rem;margin:1.5rem 0;font-size:13px}
+.step-box{background:var(--card-bg, rgba(128,128,128,0.05));border:1px solid var(--border-color, rgba(128,128,128,0.2));border-radius:12px;padding:1.5rem;margin:1.5rem 0}
+.step-box ol{margin:0;padding-left:1.4rem;line-height:2.2;font-family:var(--font-family-monospace, monospace);font-size:13px;color:var(--text-color, inherit)}
+.step-box ol li strong{color:#6e7fff}
 </style>
 
 <div class="widget">
@@ -118,22 +148,30 @@ Binary is base-2. Each position is worth 2× the one to its right. To read a bin
 })();
 </script>
 
+**Quick sanity check:** flip on *only* the leftmost bit (128). Result: 128. Now flip on the next one too (64). Result: 192. That's exactly the first octet of `192.168.1.1` — you just read a real IP address in binary.
+
+> 8 bits → values 0–255. Four octets → 32 bits total → roughly 4.3 billion addresses.
+
 ---
 
-## IP Classes — The Original Design
+## IP Classes — Why the Old System Broke
 
-When IPv4 was first designed, addresses were divided into classes based on the first octet:
+When IPv4 launched in the early 1980s, the designers divided addresses into classes based on the first octet. The idea was simple: small organisations get a Class C (254 hosts), big ones get a Class A (16 million hosts).
 
-| Class | First Octet | Scale |
-|-------|-------------|-------|
-| A | 1–126 | Huge — ~16M hosts/network |
-| B | 128–191 | Medium — ~65K hosts |
-| C | 192–223 | Small — 254 hosts |
+| Class | First Octet | Hosts per Network |
+|-------|-------------|-------------------|
+| A | 1–126 | ~16.7 million |
+| B | 128–191 | ~65,534 |
+| C | 192–223 | 254 |
 | D | 224–239 | Multicast only |
 | E | 240–255 | Experimental |
 
+This seems fine until you notice the problem: **there's no middle ground.** A company needs 1,000 hosts — they're too big for a Class C (254) but must take an entire Class B (65,534), wasting 64,000+ addresses. Multiply this across thousands of organisations and you've burned through the address space in years.
+
+The solution was **CIDR** (Classless Inter-Domain Routing) — which we'll cover next. Classes are largely obsolete today, but CCNA still tests them, and understanding *why they failed* is exactly what makes CIDR click.
+
 > [!NOTE]
-> `127.x.x.x` is reserved for **loopback** — when a device talks to itself. Try `ping 127.0.0.1` — it always responds.
+> `127.x.x.x` is reserved for **loopback** — when a device talks to itself. `ping 127.0.0.1` always responds, even with no network connection.
 
 ---
 
@@ -147,27 +185,31 @@ Three ranges are permanently reserved for private networks — they're never rou
 | `172.16.0.0/12` | ~1 million | Medium organisations |
 | `192.168.0.0/16` | ~65K | Your home Wi-Fi — right now |
 
-Your home router uses **NAT** to represent all your private devices behind a single public IP. Like an apartment building — hundreds of flats, one street address.
+Your home router uses **NAT** (Network Address Translation) to represent all your private devices behind a single public IP. Like an apartment building — hundreds of flats, one street address.
 
 ---
 
 ## Subnet Masks — Drawing the Boundary
 
-A subnet mask tells you where the **network** bits end and the **host** bits begin. It's always a solid block of 1s followed by 0s:
+An IP address contains two pieces of information packed together: **which network** the device is on, and **which host** it is within that network. A subnet mask is what splits them apart.
+
+It's always a solid block of 1s followed by 0s. The 1s cover the network portion; the 0s cover the host portion:
 
 ```
-255.255.255.0  =  11111111.11111111.11111111.00000000  (/24)
-255.255.0.0    =  11111111.11111111.00000000.00000000  (/16)
-255.0.0.0      =  11111111.00000000.00000000.00000000  (/8)
+255.255.255.0  =  11111111.11111111.11111111.00000000
+                  |_______ network _________|_ host _|
 ```
 
-More 1s = smaller network, fewer hosts. Fewer 1s = larger network, more hosts.
+More 1s = more bits locked to the network = fewer addresses left for hosts = **smaller subnet**.  
+Fewer 1s = more host bits free = **larger subnet**.
 
 ---
 
 ## The AND Operation — How Routers Actually Think
 
-When your computer sends a packet, it ANDs the destination IP with the subnet mask to find the network address. **This is the core of all routing.**
+When your computer sends a packet, it needs to know: is the destination on *my* network, or does this need to go to a router? It figures this out by ANDing the destination IP with the subnet mask. **This single operation is the foundation of all routing.**
+
+AND rules: `1 AND 1 = 1`. Anything else = 0. Applying a mask to an IP zeroes out all the host bits, leaving only the network address.
 
 **Full example — 192.168.1.100 AND 255.255.255.0:**
 
@@ -178,7 +220,7 @@ When your computer sends a packet, it ANDs the destination IP with the subnet ma
     <span><span class="legend-dot" style="background:#6e7fff"></span>IP bits</span>
     <span><span class="legend-dot" style="background:#ffd166"></span>Mask bits</span>
     <span><span class="legend-dot" style="background:#56e39f"></span>Result = 1</span>
-    <span><span class="legend-dot" style="background:#1c1c22;border:1px solid #2a2a35"></span>Result = 0</span>
+    <span><span class="legend-dot" style="background:rgba(128,128,128,0.2);border:1px solid rgba(128,128,128,0.3)"></span>Result = 0</span>
   </div>
 </div>
 
@@ -207,7 +249,7 @@ When your computer sends a packet, it ANDs the destination IP with the subnet ma
       bd.appendChild(el);
       if(i===7||i===15||i===23){
         var dot=document.createElement('span');
-        dot.style.cssText='color:#2a2a35;margin:0 2px;font-family:monospace';
+        dot.style.cssText='color:rgba(128,128,128,0.4);margin:0 2px;font-family:monospace';
         dot.textContent='.';
         bd.appendChild(dot);
       }
@@ -221,7 +263,7 @@ When your computer sends a packet, it ANDs the destination IP with the subnet ma
   var div=document.createElement('div');
   div.className='and-divider';
   container.appendChild(div);
-  container.appendChild(makeRow(resBits.map(function(b){ return b; }),'',res.join('.'),'and-result-label'));
+  container.appendChild(makeRow(resBits,'',res.join('.'),'and-result-label'));
   var lastRow=container.lastChild;
   var lastBits=lastRow.querySelector('.and-bits');
   lastBits.innerHTML='';
@@ -232,7 +274,7 @@ When your computer sends a packet, it ANDs the destination IP with the subnet ma
     lastBits.appendChild(el);
     if(i===7||i===15||i===23){
       var dot=document.createElement('span');
-      dot.style.cssText='color:#2a2a35;margin:0 2px;font-family:monospace';
+      dot.style.cssText='color:rgba(128,128,128,0.4);margin:0 2px;font-family:monospace';
       dot.textContent='.';
       lastBits.appendChild(dot);
     }
@@ -240,20 +282,29 @@ When your computer sends a packet, it ANDs the destination IP with the subnet ma
 })();
 </script>
 
-The result — **192.168.1.0** — is the network address. Any device whose IP ANDs to the same result is on the same network.
+The result — **192.168.1.0** — is the network address. Any device whose IP ANDs to the same result is on the same network and can be reached directly.
 
 ---
 
-## CIDR Notation — The Shorthand
+## CIDR — Slicing Networks into Blocks
 
-Writing `255.255.255.0` every time is tedious. CIDR uses a slash + the count of 1-bits:
+Writing `255.255.255.0` every time is tedious. Worse, class-based addressing wasted millions of IPs because you had to take a fixed-size block — no middle ground.
+
+CIDR (Classless Inter-Domain Routing) solves both. The idea: **you take a pool of 32 bits and decide how many bits belong to the network.** The rest belong to hosts. You write this as a slash followed by the bit count:
 
 ```
-192.168.1.0/24  →  255.255.255.0   (24 ones)
-10.0.0.0/8      →  255.0.0.0       (8 ones)
+192.168.1.0/24  →  24 bits = network,  8 bits = hosts  →  256 addresses
+192.168.1.0/25  →  25 bits = network,  7 bits = hosts  →  128 addresses
+192.168.1.0/26  →  26 bits = network,  6 bits = hosts  →   64 addresses
 ```
 
-**Drag the slider to explore prefix lengths:**
+**The key insight:** host bits are all 0s or all 1s for the special addresses (network and broadcast), so usable hosts = 2ⁿ − 2, where n is the number of host bits.
+
+**Block size** = 2^(32 − prefix). A /24 has a block size of 256. A /25 splits that block in two: 256/2 = 128. A /26 splits again: 64. Every time you add one bit to the prefix, you halve the block size and double the number of subnets.
+
+This is why CIDR replaced classful addressing — you can right-size any allocation. Need 500 hosts? Take a /23 (512 addresses, 510 usable). Need 6 hosts? Take a /29 (8 addresses, 6 usable). No waste.
+
+**Drag the slider to see how prefix length controls block size:**
 
 <div class="widget">
   <div class="widget-title">CIDR Prefix Explorer</div>
@@ -309,40 +360,35 @@ Writing `255.255.255.0` every time is tedious. CIDR uses a slash + the count of 
 
 Quick reference:
 
-| CIDR | Subnet Mask | Usable Hosts | Use Case |
-|------|-------------|--------------|----------|
-| `/8` | 255.0.0.0 | 16,777,214 | ISP / large org |
-| `/16` | 255.255.0.0 | 65,534 | Campus / enterprise |
-| `/24` | 255.255.255.0 | 254 | Office LAN (most common) |
-| `/25` | 255.255.255.128 | 126 | Half of a /24 |
-| `/30` | 255.255.255.252 | 2 | Point-to-point links |
-| `/32` | 255.255.255.255 | 1 | Loopback / host route |
+| CIDR | Subnet Mask | Block Size | Usable Hosts | Use Case |
+|------|-------------|------------|--------------|----------|
+| `/8` | 255.0.0.0 | 16,777,216 | 16,777,214 | ISP / large org |
+| `/16` | 255.255.0.0 | 65,536 | 65,534 | Campus / enterprise |
+| `/24` | 255.255.255.0 | 256 | 254 | Office LAN (most common) |
+| `/25` | 255.255.255.128 | 128 | 126 | Half of a /24 |
+| `/30` | 255.255.255.252 | 4 | 2 | Point-to-point links |
+| `/32` | 255.255.255.255 | 1 | 1 | Loopback / host route |
 
 ---
 
-## Wildcard Masks — The Inverse
+## How to Subnet — Step by Step
 
-Cisco ACLs and OSPF use **wildcard masks** — the bitwise inverse of a subnet mask. `0` = "must match", `1` = "don't care." To get one: subtract the subnet mask from `255.255.255.255`.
+This is the skill. Given any IP and prefix, you need four values: **network address, broadcast address, first usable host, last usable host.** Here's the method that works every time:
 
-```
-Subnet mask:   255.255.255.0   (/24)
-Wildcard mask:   0.0.0.255
-Meaning:       Match 192.168.1.0 → .255 (entire /24)
-```
+<div class="step-box">
+  <ol>
+    <li><strong>Find the block size.</strong> Subtract the last non-255 octet of the mask from 256. For /26: mask = 255.255.255.192, block = 256 − 192 = 64.</li>
+    <li><strong>Find the network address.</strong> Round the interesting octet down to the nearest multiple of the block size. For 192.168.1.100 /26: 100 rounds down to 64 → network = 192.168.1.64</li>
+    <li><strong>Find the broadcast address.</strong> Add block size − 1 to the network address. 64 + 64 − 1 = 127 → broadcast = 192.168.1.127</li>
+    <li><strong>Usable host range.</strong> First host = network + 1 = 192.168.1.65. Last host = broadcast − 1 = 192.168.1.126.</li>
+  </ol>
+</div>
 
-```
-! Permit all traffic from 192.168.1.x
-access-list 10 permit 192.168.1.0 0.0.0.255
-
-! Permit only host 10.10.10.5
-access-list 10 permit 10.10.10.5 0.0.0.0
-```
+That's it. Four steps, works for any prefix. Let's practice.
 
 ---
 
 ## Subnet Calculator
-
-Enter any IP and prefix length to get all four key values instantly:
 
 <div class="widget">
   <div class="widget-title">Subnet Calculator</div>
@@ -409,43 +455,110 @@ function calcSubnet(){
 
 ---
 
-## Practice Challenge
+## Wildcard Masks — A Quick Note
+
+> [!NOTE]
+> **You need this for CCNA, but it's a narrow concept.** Skip it if you're not there yet.
+
+Cisco ACLs (Access Control Lists) and OSPF use **wildcard masks** — the bitwise inverse of a subnet mask. The logic flips: `0` means "this bit must match," `1` means "don't care." To get one, subtract the subnet mask from `255.255.255.255`.
+
+```
+Subnet mask:   255.255.255.0
+Wildcard:        0.0.0.255     ← 255 − each octet
+Meaning: match the first three octets exactly, ignore the last
+```
+
+```
+! Permit all traffic from 192.168.1.x
+access-list 10 permit 192.168.1.0 0.0.0.255
+
+! Permit only one specific host
+access-list 10 permit 10.10.10.5 0.0.0.0
+```
+
+That's the whole concept. We'll cover ACLs properly in a dedicated post.
+
+---
+
+## Practice Challenges
+
+Work these out by hand using the four-step method above before revealing the answers. The calculator is for checking, not shortcutting.
 
 <div class="challenge-box">
-  <h4>// CHALLENGE — Can you subnet this?</h4>
+  <h4>// CHALLENGE 1 — Warm-up</h4>
   <p style="color:var(--text-color, inherit);font-family:var(--font-family-monospace, monospace);font-size:13px">Given: <strong style="color:#6e7fff">172.16.5.0 /27</strong></p>
   <ol style="color:var(--text-muted-color, #888);font-size:13px;margin-top:.5rem;padding-left:1.2rem;line-height:2.2">
     <li>What is the subnet mask?</li>
     <li>What is the block size?</li>
-    <li>What is the network address?</li>
     <li>What is the broadcast address?</li>
     <li>What is the usable host range?</li>
   </ol>
-  <div class="challenge-reveal" onclick="document.getElementById('ch-answer').style.display='block';this.style.display='none'">Reveal answer ↓</div>
-  <div class="challenge-answer" id="ch-answer">
+  <div class="challenge-reveal" onclick="document.getElementById('ch1-answer').style.display='block';this.style.display='none'">Reveal answer ↓</div>
+  <div class="challenge-answer" id="ch1-answer">
     Subnet mask:&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">255.255.255.224</span><br>
-    Block size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">32 addresses (2⁵)</span><br>
+    Block size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">32 (256 − 224)</span><br>
     Network address: <span class="hl">172.16.5.0</span><br>
     Broadcast:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">172.16.5.31</span><br>
     Host range:&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">172.16.5.1 – 172.16.5.30</span><br>
-    Usable hosts:&nbsp;&nbsp; <span class="hl">30 hosts (2⁵ − 2)</span>
+    Usable hosts:&nbsp;&nbsp; <span class="hl">30 (2⁵ − 2)</span>
   </div>
 </div>
+
+<div class="challenge-box">
+  <h4>// CHALLENGE 2 — The boundary test</h4>
+  <p style="color:var(--text-color, inherit);font-family:var(--font-family-monospace, monospace);font-size:13px">Given: <strong style="color:#6e7fff">10.0.0.200 /26</strong></p>
+  <ol style="color:var(--text-muted-color, #888);font-size:13px;margin-top:.5rem;padding-left:1.2rem;line-height:2.2">
+    <li>What network is this host on?</li>
+    <li>What is the broadcast address of that network?</li>
+    <li>Is 10.0.0.191 on the same subnet? Why or why not?</li>
+  </ol>
+  <div class="challenge-reveal" onclick="document.getElementById('ch2-answer').style.display='block';this.style.display='none'">Reveal answer ↓</div>
+  <div class="challenge-answer" id="ch2-answer">
+    Block size: <span class="hl">64 (256 − 192)</span><br>
+    Multiples of 64: 0, 64, 128, 192 → 200 falls in the 192 block<br>
+    Network address: <span class="hl">10.0.0.192</span><br>
+    Broadcast:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">10.0.0.255</span><br>
+    Host range:&nbsp;&nbsp;&nbsp;&nbsp; <span class="hl">10.0.0.193 – 10.0.0.254</span><br>
+    Is 10.0.0.191 on the same subnet? <span class="hl">No.</span> It falls in the 10.0.0.128/26 subnet (128–191).
+  </div>
+</div>
+
+<div class="challenge-box">
+  <h4>// CHALLENGE 3 — Design task</h4>
+  <p style="color:var(--text-color, inherit);font-family:var(--font-family-monospace, monospace);font-size:13px">You have the block <strong style="color:#6e7fff">192.168.10.0 /24</strong> and need to divide it into 4 equal subnets.</p>
+  <ol style="color:var(--text-muted-color, #888);font-size:13px;margin-top:.5rem;padding-left:1.2rem;line-height:2.2">
+    <li>What prefix do you use?</li>
+    <li>List all four subnet network addresses.</li>
+    <li>How many usable hosts does each subnet have?</li>
+  </ol>
+  <div class="challenge-reveal" onclick="document.getElementById('ch3-answer').style.display='block';this.style.display='none'">Reveal answer ↓</div>
+  <div class="challenge-answer" id="ch3-answer">
+    4 subnets requires 2 extra bits → /24 + 2 = <span class="hl">/26</span><br>
+    Block size: 64<br>
+    Subnet 1: <span class="hl">192.168.10.0/26</span>&nbsp;&nbsp; (0–63)<br>
+    Subnet 2: <span class="hl">192.168.10.64/26</span>&nbsp; (64–127)<br>
+    Subnet 3: <span class="hl">192.168.10.128/26</span> (128–191)<br>
+    Subnet 4: <span class="hl">192.168.10.192/26</span> (192–255)<br>
+    Usable hosts each: <span class="hl">62 (2⁶ − 2)</span>
+  </div>
+</div>
+
+Done all three? Drop your working in the comments below — it's good practice to write it out, and I'll check your method.
 
 ---
 
 ## What You Now Know
 
-- **IPv4 addresses** are 32 bits, four decimal octets (0–255 each)
-- **Binary** is how computers actually process every address — 8 bits per octet
-- **IP classes** (A/B/C) defined the original split — mostly replaced by CIDR
-- **Private ranges** (10.x, 172.16.x, 192.168.x) never appear on the public internet
-- **Subnet masks** draw the boundary between network and host bits
-- **AND operation** — the fundamental routing decision: IP AND mask = network address
-- **CIDR /notation** counts the 1-bits. More bits = smaller network
-- **Wildcard masks** are the inverse — used in Cisco ACLs and OSPF
+- **IP vs MAC** — IP is a logical Layer 3 address; MAC is a physical Layer 2 address. IP gets data to the right network, MAC gets it to the right device.
+- **Binary** — 8 bits per octet, place values double right-to-left: 1, 2, 4, 8, 16, 32, 64, 128. Add the 1-positions to get decimal.
+- **IP classes** — the original fixed-size system. Its rigidity caused address waste, which is exactly why CIDR replaced it.
+- **Private ranges** — 10.x, 172.16.x, 192.168.x never appear on the public internet.
+- **Subnet masks** — draw the network/host boundary in binary. All 1s = network bits, all 0s = host bits.
+- **AND operation** — IP AND mask = network address. This is the core routing decision.
+- **CIDR** — instead of fixed classes, you choose how many bits belong to the network. Block size = 2^(32 − prefix). More bits = smaller block = more subnets.
+- **Wildcard masks** — inverse of subnet masks, used in Cisco ACLs and OSPF.
 
-The fastest way to get good at this: practice on paper. Pick a random IP and prefix, work out the four values by hand. After 20 problems it becomes second nature.
+The fastest way to get good at this: practice on paper. Pick a random IP and prefix, work out the four values by hand using the four-step method. After 20 problems it becomes second nature — the numbers just fall into place.
 
 ---
 
