@@ -20,8 +20,19 @@ social:
   name: Tsotne Okrostsvaridze
   email: cotne.ok@gmail.com
   links:
-    - https://github.com/cotneok
-    - https://www.linkedin.com/in/tsotne-okrostsvaridze-ab1b5958/
+      - type: github
+      icon: "fab fa-github"
+      url: "https://github.com/cotneok"
+    
+    - type: linkedin
+      icon: "fab fa-linkedin"
+      url: "https://www.linkedin.com/in/tsotne-okrostsvaridze-ab1b5958/"
+    
+    - type: email
+      icon: "fas fa-envelope"
+      url: "mailto:cotne.ok@gmail.com"
+
+
 
 # Web Analytics Settings — fill in when ready
 analytics:
