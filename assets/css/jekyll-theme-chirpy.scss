@@ -7,114 +7,289 @@
 {%- endif -%}
 ";
 
-/* ---------- Sidebar avatar ---------- */
+/* ==========================================================================
+   tsotne.blog — blue-accent theme layered over Chirpy 7.5
+   Design: deep navy base · electric-blue → violet accent gradient · glowing
+   hover states · animated shimmer on the brand title
+   ========================================================================== */
+
+:root {
+  --brand-primary: #4f8bff;
+  --brand-primary-soft: #7aa8ff;
+  --brand-violet: #a855f7;
+  --brand-cyan: #22d3ee;
+  --brand-gradient: linear-gradient(135deg, #4f8bff 0%, #a855f7 100%);
+  --brand-gradient-wide: linear-gradient(
+    120deg,
+    #8db6ff 0%,
+    #c4a8ff 50%,
+    #88e0ff 100%
+  );
+}
+
+/* ==========================================================================
+   Dark-mode palette (the site is locked to dark)
+   ========================================================================== */
+
+html[data-mode="dark"] {
+  /* Framework */
+  --main-bg: #0b1220;
+  --mask-bg: #121a2a;
+  --main-border-color: #1e2a44;
+
+  /* Text */
+  --text-color: #e5edf8;
+  --text-muted-color: #8da0bd;
+  --text-muted-highlight-color: #c0cee3;
+  --heading-color: #f2f7ff;
+  --label-color: #b8c8df;
+  --blockquote-border-color: #4f8bff;
+  --blockquote-text-color: #a9b8d0;
+
+  /* Links */
+  --link-color: #7aa8ff;
+  --link-underline-color: rgba(122, 168, 255, 0.45);
+
+  /* Sidebar */
+  --site-title-color: #f2f7ff;
+  --site-subtitle-color: #8da0bd;
+  --sidebar-bg: #0a111f;
+  --sidebar-border-color: #18223a;
+  --sidebar-muted-color: #8da0bd;
+  --sidebar-active-color: #ffffff;
+  --sidebar-hover-bg: rgba(79, 139, 255, 0.12);
+  --sidebar-btn-bg: rgba(255, 255, 255, 0.04);
+  --sidebar-btn-color: #b8c8df;
+  --avatar-border-color: rgba(122, 168, 255, 0.45);
+
+  /* Topbar */
+  --topbar-bg: rgba(11, 18, 32, 0.72);
+  --topbar-text-color: #e5edf8;
+  --search-border-color: #1e2a44;
+  --search-icon-color: #8da0bd;
+  --input-focus-border-color: #4f8bff;
+
+  /* Cards */
+  --card-bg: #101a2e;
+  --card-hovor-bg: #142138;
+  --card-border-color: #1e2a44;
+  --card-box-shadow: rgba(0, 0, 0, 0.38);
+
+  /* Tags / categories */
+  --tag-bg: rgba(79, 139, 255, 0.08);
+  --tag-hover: rgba(79, 139, 255, 0.22);
+  --tag-border: #29375a;
+  --categories-border: #1e2a44;
+  --categories-hover-bg: rgba(79, 139, 255, 0.12);
+
+  /* Buttons */
+  --button-bg: #101a2e;
+  --btn-border-color: #1e2a44;
+  --btn-backtotop-bg: rgba(79, 139, 255, 0.15);
+  --btn-backtotop-color: #7aa8ff;
+  --btn-backtotop-border-color: rgba(79, 139, 255, 0.3);
+  --btn-box-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Tables */
+  --tb-odd-bg: #101a2e;
+  --tb-even-bg: #0f1628;
+  --tb-border-color: #1e2a44;
+
+  /* Code */
+  --code-bg: #0e1626;
+  --code-header-bg: #141e35;
+  --code-header-text-color: #8da0bd;
+  --highlight-bg: #0e1626;
+  --language-border-color: #1e2a44;
+  --highlight-lineno-color: #4d5b75;
+  --inline-code-bg: rgba(79, 139, 255, 0.1);
+
+  /* Prompt blocks */
+  --prompt-tip-bg: rgba(34, 197, 94, 0.1);
+  --prompt-tip-icon-color: #22c55e;
+  --prompt-info-bg: rgba(79, 139, 255, 0.1);
+  --prompt-info-icon-color: #4f8bff;
+  --prompt-warning-bg: rgba(234, 179, 8, 0.1);
+  --prompt-warning-icon-color: #eab308;
+  --prompt-danger-bg: rgba(244, 63, 94, 0.1);
+  --prompt-danger-icon-color: #f43f5e;
+  --prompt-danger-color: #fecdd3;
+
+  /* Timeline / archives */
+  --timeline-color: rgba(79, 139, 255, 0.3);
+  --timeline-node-bg: #4f8bff;
+  --timeline-year-dot-color: #4f8bff;
+}
+
+/* Mild tuning for light mode in case it ever gets enabled */
+html[data-mode="light"] {
+  --link-color: #1d4ed8;
+  --link-underline-color: rgba(29, 78, 216, 0.35);
+  --inline-code-bg: rgba(37, 99, 235, 0.08);
+}
+
+/* ==========================================================================
+   Ambient background: subtle radial glows — the thing that makes the page
+   feel alive without getting in the way of reading
+   ========================================================================== */
+
+html[data-mode="dark"] body {
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(79, 139, 255, 0.1), transparent 60%),
+    radial-gradient(1000px 700px at -10% 15%, rgba(168, 85, 247, 0.07), transparent 55%),
+    radial-gradient(900px 500px at 50% 105%, rgba(34, 211, 238, 0.05), transparent 60%),
+    var(--main-bg);
+  background-attachment: fixed;
+}
+
+/* ==========================================================================
+   Sidebar
+   ========================================================================== */
+
+#sidebar {
+  background:
+    radial-gradient(380px 220px at 50% 0%, rgba(79, 139, 255, 0.1), transparent 70%),
+    var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border-color);
+}
 
 .site-avatar {
   display: flex;
   justify-content: center;
 }
 
+#sidebar .site-avatar img,
 .site-avatar img {
   margin: 0 auto;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border: 2px solid var(--avatar-border-color);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
 }
 
 #sidebar .site-avatar:hover img {
-  transform: scale(1.04);
-  box-shadow: 0 0 0 3px rgba(110, 127, 255, 0.35);
+  transform: scale(1.05);
+  box-shadow:
+    0 0 0 4px rgba(79, 139, 255, 0.22),
+    0 10px 28px rgba(79, 139, 255, 0.4);
+  border-color: rgba(122, 168, 255, 0.75);
 }
 
-/* ---------- Sidebar title + tagline ---------- */
-
+/* Brand title — subtle shimmering gradient so the eye goes there first */
 #sidebar .site-title a {
-  letter-spacing: 0.01em;
   font-weight: 700;
+  letter-spacing: 0.005em;
+  background: var(--brand-gradient-wide);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 9s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 #sidebar .site-subtitle {
   font-size: 0.82rem;
-  line-height: 1.35;
-  letter-spacing: 0.02em;
-  opacity: 0.85;
-  padding: 0 0.5rem;
+  line-height: 1.45;
+  letter-spacing: 0.015em;
+  color: var(--site-subtitle-color);
+  padding: 0 0.75rem;
   font-style: normal;
 }
 
-/* ---------- Post / page typography polish ---------- */
+/* Sidebar nav items */
+#sidebar ul.nav li.nav-item a.nav-link {
+  border-radius: 8px;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+#sidebar ul.nav li.nav-item a.nav-link:hover {
+  background: var(--sidebar-hover-bg);
+  color: var(--brand-primary-soft) !important;
+  transform: translateX(2px);
+}
+
+#sidebar ul.nav li.nav-item.active a.nav-link {
+  background: linear-gradient(
+    90deg,
+    rgba(79, 139, 255, 0.22) 0%,
+    rgba(79, 139, 255, 0.04) 100%
+  );
+  color: #ffffff !important;
+  border-left: 3px solid var(--brand-primary);
+}
+
+#sidebar .sidebar-bottom a:hover,
+#sidebar .sidebar-bottom .mode-toggle:hover {
+  color: var(--brand-primary-soft) !important;
+}
+
+/* ==========================================================================
+   Topbar — blurred, translucent
+   ========================================================================== */
+
+#topbar-wrapper {
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid rgba(79, 139, 255, 0.08);
+}
+
+/* ==========================================================================
+   Main content typography
+   ========================================================================== */
 
 #main-wrapper h1,
 #main-wrapper h2,
 #main-wrapper h3 {
   letter-spacing: -0.01em;
+  color: var(--heading-color);
 }
 
 #main-wrapper h2 {
-  border-bottom: 1px solid var(--main-border-color);
-  padding-bottom: 0.35rem;
-  margin-top: 2.4rem;
+  position: relative;
+  padding-left: 0.95rem;
+  margin-top: 2.6rem;
+  margin-bottom: 1rem;
+  border-bottom: none !important;
+}
+
+#main-wrapper h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--brand-gradient);
 }
 
 #main-wrapper h3 {
-  margin-top: 1.8rem;
+  margin-top: 1.9rem;
+  color: var(--brand-primary-soft);
 }
 
-/* ---------- Prompt blocks (used on Projects page) ---------- */
-
-.prompt-info,
-.prompt-tip,
-.prompt-warning,
-.prompt-danger {
-  border-radius: 10px;
-  padding: 1rem 1.2rem 1rem 3rem;
-  line-height: 1.55;
+#main-wrapper p,
+#main-wrapper li {
+  line-height: 1.78;
 }
 
-/* ---------- Inline tag / category pills ---------- */
-
-.post-meta .categories a,
-.post-meta .tags a {
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-/* ---------- Home page post previews ---------- */
-
-#post-list .card-wrapper {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-#post-list .card-wrapper:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
-
-/* ---------- Code blocks: slightly softer background ---------- */
-
-.highlight {
-  border-radius: 8px;
-}
-
-/* ---------- Tables: breathing room ---------- */
-
-#main-wrapper table {
-  font-size: 0.92rem;
-}
-
-#main-wrapper table th {
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-}
-
-/* ---------- Smooth page fade-in ---------- */
-
+/* smooth page entrance */
 #main-wrapper {
-  animation: fade-in 0.35s ease-out;
+  animation: fade-up 0.45s ease-out;
 }
 
-@keyframes fade-in {
+@keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -122,8 +297,250 @@
   }
 }
 
-/* ---------- Accent links on About / Projects ---------- */
+/* ==========================================================================
+   Links
+   ========================================================================== */
 
-#page a:not(.post-preview):not(.btn) {
+#page a:not(.img-link):not(.btn),
+.post-content a:not(.img-link):not(.btn) {
+  transition: color 0.2s ease, text-underline-offset 0.2s ease;
   text-underline-offset: 3px;
+}
+
+#page a:not(.img-link):not(.btn):hover,
+.post-content a:not(.img-link):not(.btn):hover {
+  color: var(--brand-primary-soft);
+  text-underline-offset: 5px;
+}
+
+/* ==========================================================================
+   Home page — post cards with blue glow on hover
+   ========================================================================== */
+
+#post-list .card-wrapper {
+  border: 1px solid var(--card-border-color);
+  border-radius: 14px;
+  background: var(--card-bg);
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+#post-list .card-wrapper:hover {
+  transform: translateY(-3px);
+  border-color: rgba(79, 139, 255, 0.4);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(79, 139, 255, 0.2),
+    0 14px 38px -14px rgba(79, 139, 255, 0.55);
+}
+
+#post-list .card-wrapper:hover .card-title {
+  color: var(--brand-primary-soft);
+}
+
+/* Pinned posts accent */
+#post-list .pin {
+  color: var(--brand-primary-soft);
+}
+
+/* ==========================================================================
+   Prompt blocks — rounder, subtly bordered
+   ========================================================================== */
+
+.prompt-info,
+.prompt-tip,
+.prompt-warning,
+.prompt-danger {
+  border-radius: 12px;
+  padding: 1rem 1.2rem 1rem 3rem;
+  line-height: 1.65;
+  border: 1px solid transparent;
+}
+
+.prompt-info {
+  border-color: rgba(79, 139, 255, 0.22);
+}
+
+.prompt-tip {
+  border-color: rgba(34, 197, 94, 0.22);
+}
+
+.prompt-warning {
+  border-color: rgba(234, 179, 8, 0.22);
+}
+
+.prompt-danger {
+  border-color: rgba(244, 63, 94, 0.22);
+}
+
+/* ==========================================================================
+   Code blocks
+   ========================================================================== */
+
+div[class^="language-"],
+.highlight {
+  border-radius: 12px;
+  border: 1px solid var(--language-border-color);
+  overflow: hidden;
+}
+
+.highlight pre {
+  padding: 1rem 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.highlight .lineno {
+  color: var(--highlight-lineno-color);
+  padding-right: 0.8rem;
+  border-right: 1px solid var(--main-border-color);
+  user-select: none;
+}
+
+code.highlighter-rouge,
+p code,
+li code,
+td code {
+  background: var(--inline-code-bg);
+  color: var(--brand-primary-soft);
+  padding: 0.1em 0.45em;
+  border-radius: 5px;
+  font-size: 0.88em;
+}
+
+.code-header {
+  background: var(--code-header-bg) !important;
+  border-bottom: 1px solid var(--language-border-color);
+  padding: 0.4rem 0.9rem;
+}
+
+.code-header span.label {
+  color: var(--text-muted-highlight-color);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Blockquotes
+   ========================================================================== */
+
+blockquote {
+  border-left-width: 3px !important;
+  border-radius: 0 10px 10px 0;
+  background: rgba(79, 139, 255, 0.045);
+  padding: 0.9rem 1.2rem;
+  margin: 1.4rem 0;
+  color: var(--blockquote-text-color);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Tags / categories pills
+   ========================================================================== */
+
+.post-tag,
+a.post-tag,
+.tag-wrapper .tag,
+#tags .tag,
+a.tag,
+.post-meta .tags a,
+.post-meta .categories a {
+  border-radius: 999px !important;
+  border: 1px solid var(--tag-border) !important;
+  padding: 0.15rem 0.7rem !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    transform 0.2s ease !important;
+}
+
+.post-tag:hover,
+a.post-tag:hover,
+.tag-wrapper .tag:hover,
+#tags .tag:hover,
+a.tag:hover,
+.post-meta .tags a:hover,
+.post-meta .categories a:hover {
+  background: var(--tag-hover) !important;
+  border-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+#main-wrapper table {
+  font-size: 0.92rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#main-wrapper table th {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--text-muted-highlight-color);
+  background: rgba(79, 139, 255, 0.07);
+}
+
+/* ==========================================================================
+   Archive / timeline (if used)
+   ========================================================================== */
+
+#archives .year,
+#archives .lead {
+  color: var(--brand-primary-soft);
+}
+
+/* ==========================================================================
+   Back-to-top button
+   ========================================================================== */
+
+#back-to-top {
+  background: var(--btn-backtotop-bg) !important;
+  color: var(--btn-backtotop-color) !important;
+  border: 1px solid var(--btn-backtotop-border-color) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+#back-to-top:hover {
+  transform: translateY(-2px);
+  background: rgba(79, 139, 255, 0.25) !important;
+  box-shadow: 0 10px 28px rgba(79, 139, 255, 0.4);
+}
+
+/* ==========================================================================
+   Scrollbar (WebKit) — blue thumb
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2a44;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-primary);
+}
+
+/* ==========================================================================
+   Text selection
+   ========================================================================== */
+
+::selection {
+  background: rgba(79, 139, 255, 0.4);
+  color: #ffffff;
 }
