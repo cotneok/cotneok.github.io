@@ -19,8 +19,7 @@ Almost everything I build in my own time involves **AI agents, MCP servers, or t
 - **[DemoFlow](https://www.demoflow.dev)** — live SaaS that turns screenshots into interactive product demos. Claude Vision writes the captions; Stripe handles billing; the whole thing runs on Supabase, Railway and Vercel.
 - **EvalPriv** — self-hosted AI gateway that intercepts every prompt leaving your network, scans for PII (emails, IBANs, Luhn-validated cards), and logs the rest.
 - **ModelArena** — pairwise benchmarking that pits AI models head-to-head on your actual workload and produces a win-rate matrix.
-- **AI-augmented Zettelkasten** — personal knowledge system that gives Claude live vault access through a custom MCP server, so it can surface link candidates and catch inconsistencies at scale.
-- **Resume Tailor** — small CLI that reads a master profile, scrapes a job posting and produces an ATS-aware résumé. It writes the one I send out.
+- **AI-augmented Zettelkasten** — personal knowledge system that gives Claude live vault access through a custom MCP server, so it can surface link candidates and catch inconsistencies at scale. This is my prime knowledge and personal improvement pipeline.
 
 More detail, with stacks and design choices, on the [projects page](/projects/).
 
