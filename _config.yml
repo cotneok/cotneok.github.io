@@ -6,10 +6,14 @@ lang: en
 timezone: Europe/Amsterdam
 
 # jekyll-seo-tag settings
-title: Tsotne's Blog
-tagline: Cybersecurity & Networking
+title: Tsotne Okrostsvaridze
+tagline: Engineer · Building AI systems & automations · Security by default
 description: >-
-  Cybersecurity & Networking
+  Personal site of Tsotne Okrostsvaridze — senior software engineer in the
+  Netherlands. Notes on building and automating with AI (agents, MCP servers,
+  Claude API pipelines), seven years of Ruby on Rails and Python backend work,
+  and security-minded engineering — backed by volunteer vulnerability research
+  at DIVD.
 
 url: "https://tsotne.blog"
 
@@ -52,7 +56,7 @@ comments:
     reactions_enabled: 1
 
 cdn:
-social_preview_image:
+social_preview_image: /assets/IMG_6074.jpg
 
 pwa:
   enabled: true

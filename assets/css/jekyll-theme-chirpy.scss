@@ -1,3 +1,14 @@
+---
+---
+
+@use "main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+";
+
+/* ---------- Sidebar avatar ---------- */
+
 .site-avatar {
   display: flex;
   justify-content: center;
@@ -5,4 +16,114 @@
 
 .site-avatar img {
   margin: 0 auto;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+#sidebar .site-avatar:hover img {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 3px rgba(110, 127, 255, 0.35);
+}
+
+/* ---------- Sidebar title + tagline ---------- */
+
+#sidebar .site-title a {
+  letter-spacing: 0.01em;
+  font-weight: 700;
+}
+
+#sidebar .site-subtitle {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+  padding: 0 0.5rem;
+  font-style: normal;
+}
+
+/* ---------- Post / page typography polish ---------- */
+
+#main-wrapper h1,
+#main-wrapper h2,
+#main-wrapper h3 {
+  letter-spacing: -0.01em;
+}
+
+#main-wrapper h2 {
+  border-bottom: 1px solid var(--main-border-color);
+  padding-bottom: 0.35rem;
+  margin-top: 2.4rem;
+}
+
+#main-wrapper h3 {
+  margin-top: 1.8rem;
+}
+
+/* ---------- Prompt blocks (used on Projects page) ---------- */
+
+.prompt-info,
+.prompt-tip,
+.prompt-warning,
+.prompt-danger {
+  border-radius: 10px;
+  padding: 1rem 1.2rem 1rem 3rem;
+  line-height: 1.55;
+}
+
+/* ---------- Inline tag / category pills ---------- */
+
+.post-meta .categories a,
+.post-meta .tags a {
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ---------- Home page post previews ---------- */
+
+#post-list .card-wrapper {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+#post-list .card-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Code blocks: slightly softer background ---------- */
+
+.highlight {
+  border-radius: 8px;
+}
+
+/* ---------- Tables: breathing room ---------- */
+
+#main-wrapper table {
+  font-size: 0.92rem;
+}
+
+#main-wrapper table th {
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+/* ---------- Smooth page fade-in ---------- */
+
+#main-wrapper {
+  animation: fade-in 0.35s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Accent links on About / Projects ---------- */
+
+#page a:not(.post-preview):not(.btn) {
+  text-underline-offset: 3px;
 }
