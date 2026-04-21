@@ -71,17 +71,6 @@ My personal knowledge base, Obsidian-backed, with Claude wired in as an integrat
 
 ---
 
-## Resume Tailor — AI pipeline for targeted résumés
-
-A local CLI that reads a master profile, fetches a job description from any URL (including JS-rendered ATS platforms), runs a keyword gap analysis, and generates a tailored DOCX + PDF with an ATS keyword coverage report.
-
-> **Stack:** Python · Anthropic Claude API · python-docx · Playwright · httpx
-{: .prompt-info }
-
-This one writes the résumés I actually send out. The Claude call is the interesting part — it's a careful prompt that preserves factual accuracy while reshaping emphasis toward the role.
-
----
-
 ## What's next
 
 I have half-finished projects around agent observability, autonomous security-research pipelines, and a small language for describing AI evaluation rubrics. If any of them mature into something useful, they'll show up here — and get a write-up on the [blog](/).
