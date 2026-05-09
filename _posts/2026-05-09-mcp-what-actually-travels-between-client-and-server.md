@@ -332,6 +332,10 @@ That's the whole map.
 
 ---
 
+If you want to see real frames flying past instead of taking my word for it, point the [MCP Inspector](https://github.com/modelcontextprotocol/inspector) at any MCP server and watch the actual JSON-RPC traffic in your browser. It's the fastest way to make this post stop being theory.
+
+---
+
 *Tsotne · tsotne.blog · AI engineering series, post #2*
 
 <script>
